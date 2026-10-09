@@ -1,0 +1,16 @@
+<resources>
+    <string name="app_name">pr_32_kurs_5_KachalinSemen_6v</string>
+    <string name="reg">Регистрация</string>
+    <string name="login">Логин</string>
+    <string name="password">Пароль</string>
+    <string name="voity">Войти</string>
+    <string name="sity">Город:   </string>
+    <string name="temp">Температура:   </string>
+    <string name="pres">Давление:   </string>
+    <string name="veter">Скорость ветра:   </string>
+    <string name="cloud">Облачность:   </string>
+    <string name="city2">Введите название города</string>
+    <string name="search">Найти</string>
+    <string name="search2">Вывести сохраненное</string>
+    <string name="search3">Сохранить</string>
+</resources>
