@@ -9,7 +9,8 @@ interface Weater_Helper {
 
     @Query("SELECT * FROM weaters WHERE id = :id")
     fun getById(id : Long) : Weater
-
+    @Query("SELECT * FROM weaters WHERE name = :name")
+    fun getByName(name : String) : Weater
     @Insert
     fun insert(weaters: Weater)
 

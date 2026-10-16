@@ -21,6 +21,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.json.JSONObject
+import java.sql.Date
+import java.time.LocalDate
 
 class Weather_Window : AppCompatActivity() {
     private lateinit var text1 : EditText
@@ -62,41 +64,53 @@ class Weather_Window : AppCompatActivity() {
                 showAlert("Пустая строка","Ошибка")
                 return@setOnClickListener
             }
-            var key = "29fe78a50724443b9dd84159260910"
-            var url = "https://api.weatherapi.com/v1/current.json?key=$key&q=${text_new.text.toString()}&lang=ru"
             val queue = Volley.newRequestQueue(this)
-            Log.d("MyLog", "Temp22222")
-            val stringRequest = StringRequest(
-                Request.Method.GET, url,
-                { response ->
-                    Log.d("MyLog", "Temp222221")
-                    val obj = JSONObject(response)
-                    val current = obj.getJSONObject("current")
-
-                    val temp = current.getDouble("temp_c")
-                    val pressure = current.getDouble("pressure_mb")
-                    val wind = current.getDouble("wind_kph")
-                    val cloud = current.getInt("cloud")
-                    text1.setText(text_new.text.toString())
-                    text2.setText("$temp")
-                    text3.setText("$pressure")
-                    text4.setText("$wind")
-                    text5.setText("$cloud")
-                    lifecycleScope.launch {
-                        withContext(Dispatchers.IO)
-                        {
-                            dao.insert(Weater(name = text_new.text.toString(), temp = temp,pressure = pressure,windSpeed = wind,cloud = cloud))
-                        }
+            lifecycleScope.launch {
+                var obj = withContext(Dispatchers.IO) { dao.getByName(text_new.text.toString()) }
+                if(obj != null) {
+                    if (obj.days == LocalDate.now().toString()) {
+                        showAlert("Вы уже запрашивали данный город сегодня", "Ошибка")
                     }
-
-                    Log.d("MyLog", "Current Download")
-
-                },
-                {
-                    Log.d("MyLog", "Volley Error: $it")
                 }
-            )
-            queue.add(stringRequest)
+                else{
+                    var key = "29fe78a50724443b9dd84159260910"
+                    var url = "https://api.weatherapi.com/v1/current.json?key=$key&q=${text_new.text.toString()}&lang=ru"
+
+                    Log.d("MyLog", "Temp22222")
+                    val stringRequest = StringRequest(
+                        Request.Method.GET, url,
+                        { response ->
+                            Log.d("MyLog", "Temp222221")
+                            val obj = JSONObject(response)
+                            val current = obj.getJSONObject("current")
+
+                            val temp = current.getDouble("temp_c")
+                            val pressure = current.getDouble("pressure_mb")
+                            val wind = current.getDouble("wind_kph")
+                            val cloud = current.getInt("cloud")
+                            text1.setText(text_new.text.toString())
+                            text2.setText("$temp")
+                            text3.setText("$pressure")
+                            text4.setText("$wind")
+                            text5.setText("$cloud")
+                            lifecycleScope.launch {
+                                withContext(Dispatchers.IO)
+                                {
+                                    dao.insert(Weater(name = text_new.text.toString(), temp = temp,pressure = pressure,windSpeed = wind,cloud = cloud,days = LocalDate.now().toString()))
+                                }
+                            }
+
+                            Log.d("MyLog", "Current Download")
+
+                        },
+                        {
+                            Log.d("MyLog", "Volley Error: $it")
+                        }
+                    )
+                    queue.add(stringRequest)
+                }
+            }
+
         }
         button2.setOnClickListener{
             lifecycleScope.launch {
@@ -112,7 +126,8 @@ class Weather_Window : AppCompatActivity() {
                     "Температура: ${w.temp}°C\n" +
                     "Давление: ${w.pressure} мм рт.ст.\n" +
                     "Ветер: ${w.windSpeed} км/ч\n" +
-                    "Облачность: ${w.cloud}%"
+                    "Облачность: ${w.cloud}%\n"+
+                    "Время запроса: ${w.days}"
                 }
                 showAlert(message,"Сохраненые данные");
             }
@@ -165,12 +180,12 @@ class Weather_Window : AppCompatActivity() {
                     showAlert("Таких данных нету","Ошибка")
                     return@launch
                 }
-                if(text_new.text.toString().length == 0 || text2.text.toString().length == 0 || text3.text.toString().length == 0 || text4.text.toString().length == 0 || text5.text.toString().length == 0)
+                if(text1.text.toString().length == 0 || text2.text.toString().length == 0 || text3.text.toString().length == 0 || text4.text.toString().length == 0 || text5.text.toString().length == 0)
                 {
                     showAlert("Пустые строки","Ошибка")
                     return@launch
                 }
-                var s = Weater(id = obj.id,name = text_new.text.toString(), temp = text2.text.toString().toDouble(),pressure = text3.text.toString().toDouble(),windSpeed = text4.text.toString().toDouble(),cloud = text5.text.toString().toInt())
+                var s = Weater(id = obj.id,name = text1.text.toString(), temp = text2.text.toString().toDouble(),pressure = text3.text.toString().toDouble(),windSpeed = text4.text.toString().toDouble(),cloud = text5.text.toString().toInt(),days=obj.days)
 
                 withContext(Dispatchers.IO) { dao.update(s) }
                 showAlert("Данные под ID: ${text6.text.toString().toLong()} сохранены","Отлично")

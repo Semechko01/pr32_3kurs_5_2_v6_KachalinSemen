@@ -18,7 +18,7 @@ abstract class DataBase : RoomDatabase() {
                 obj ?: Room.databaseBuilder(
                     context.applicationContext,
                     DataBase::class.java,
-                    "my_weather.db"
+                    "my_weather4.db"
                 ).build().also { obj = it }
             }
     }

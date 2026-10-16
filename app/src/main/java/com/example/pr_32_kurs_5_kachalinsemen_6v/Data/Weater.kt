@@ -11,5 +11,6 @@ data class Weater(
     val temp: Double,
     val pressure: Double,
     val windSpeed: Double,
-    val cloud : Int
+    val cloud : Int,
+    val days: String
 )
