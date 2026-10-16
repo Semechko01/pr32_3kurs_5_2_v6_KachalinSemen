@@ -13,4 +13,8 @@
     <string name="search">Найти</string>
     <string name="search2">Вывести сохраненное</string>
     <string name="search3">Сохранить</string>
+    <string name="search4">Редактировать</string>
+    <string name="id_search">Напишите id</string>
+    <string name="delete">Удалить</string>
+    <string name="exit">Выйти</string>
 </resources>

@@ -7,6 +7,9 @@ interface Weater_Helper {
     @Query("SELECT * FROM weaters")
     fun getAll(): List<Weater>
 
+    @Query("SELECT * FROM weaters WHERE id = :id")
+    fun getById(id : Long) : Weater
+
     @Insert
     fun insert(weaters: Weater)
 
